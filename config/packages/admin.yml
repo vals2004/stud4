@@ -22,6 +22,16 @@ services:
             - ~
         tags:
             - { name: sonata.admin, manager_type: orm, label: Users, group: Common }
+    
+    app.admin.subject_admin:
+        class: App\Admin\SubjectAdmin
+        public: true
+        arguments:
+            - ~
+            - App\Entity\Subject
+            - ~
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: Subjects, group: Common }
 
     app.admin.lesson_admin:
         class: App\Admin\LessonAdmin

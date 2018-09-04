@@ -3,10 +3,14 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Fresh\DoctrineEnumBundle\Validator\Constraints as DoctrineAssert;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * Lesson
  *
+ * @Vich\Uploadable
  * @ORM\Table(name="lesson")
  * @ORM\Entity(repositoryClass="App\Repository\LessonRepository")
  */
@@ -41,13 +45,39 @@ class Lesson
      * @ORM\Column(name="endTime", type="time")
      */
     private $endTime;
+    
+    /**
+     * @var Subject
+     *
+     * @ORM\ManyToOne(targetEntity="Subject")
+     */
+    private $subject;
 
     /**
-     * @var string
+     * @var LessonType
      *
-     * @ORM\Column(name="name", type="string", length=255)
+     * @ORM\Column(name="type", type="LessonType", nullable=false)
+     * @DoctrineAssert\Enum(entity="App\DBAL\Types\LessonType") 
      */
-    private $name;
+    private $type;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @var string
+     */
+    private $document;
+
+    /**
+     * @Vich\UploadableField(mapping="lesson_documents", fileNameProperty="document")
+     * @var File
+     */
+    private $documentFile;
+
+    /**
+     * @ORM\Column(type="datetime")
+     * @var \DateTime
+     */
+    private $updatedAt;    
 
     /**
      * @var Group[]
@@ -76,11 +106,19 @@ class Lesson
     private $users;
 
     /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
      * @return string
      */
     public function __toString()
     {
-        return $this->getName().', '.$this->getRoom();
+        return $this->getSubject() ? $this->getSubject()->getName().', '.$this->getRoom() : '';
     }
 
     /**
@@ -163,37 +201,6 @@ class Lesson
     public function getEndTime()
     {
         return $this->endTime;
-    }
-
-    /**
-     * Set name
-     *
-     * @param string $name
-     *
-     * @return TimeTable
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -286,5 +293,77 @@ class Lesson
     public function getUsers()
     {
         return $this->users;
+    }
+
+    /**
+     * Get type
+     *
+     * @return \App\DBAL\Types\LessonType
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * Set type
+     *
+     * @param \App\DBAL\Types\LessonType 
+     *
+     * @return Lesson
+     */
+    public function setType($type)
+    {
+        return $this->type = $type;
+    }
+
+    /**
+     * Get subject
+     *
+     * @return \App\Entity\Subject
+     */
+    public function getSubject()
+    {
+        return $this->subject;
+    }
+
+    /**
+     * Set subject
+     *
+     * @param \App\Entity\Subject
+     *
+     * @return Lesson
+     */
+    public function setSubject(\App\Entity\Subject $subject)
+    {
+        return $this->subject = $subject;
+    }
+
+    public function setDocumentFile(File $document = null)
+    {
+        $this->documentFile = $document;
+
+        // VERY IMPORTANT:
+        // It is required that at least one field changes if you are using Doctrine,
+        // otherwise the event listeners won't be called and the file is lost
+        if ($document) {
+            // if 'updatedAt' is not defined in your entity, use another property
+            $this->updatedAt = new \DateTime('now');
+        }
+    }
+
+    public function getDocumentFile()
+    {
+        return $this->documentFile;
+    }
+
+    public function setDocument($document)
+    {
+        $this->document= $document;
+    }
+
+    public function getDocument()
+    {
+        return $this->document;
     }
 }

@@ -14,8 +14,14 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use App\Entity\User;
 use App\Form\UserType;
+use App\Form\LoginType;
+use App\Form\ForgotType;
+use App\Form\RestoreType;
 
 /**
  * Class SecurityController
@@ -35,21 +41,7 @@ class SecurityController extends Controller
         $error = $session->get(Security::AUTHENTICATION_ERROR);
         $session->remove(Security::AUTHENTICATION_ERROR);
 
-        $formBuilder = $this->createFormBuilder()
-            ->add('_username', EmailType::class, [
-                'required' => true,
-                'label' => 'Email',
-            ])
-            ->add('_password', PasswordType::class, [
-                'required' => true,
-                'label' => 'Password'
-            ])
-            ->add('_remember', CheckboxType::class, [
-                'required' => false,
-                'label' => 'Remember me'
-            ])
-            ->add('submit', SubmitType::class, array('label' => 'Sign In'));
-        $form = $formBuilder->getForm();
+        $form = $this->createForm(LoginType::class, null);
 
         return [
             'last_username' => $session->get(Security::LAST_USERNAME),
@@ -85,16 +77,57 @@ class SecurityController extends Controller
 
         if ($form->isSubmitted() && $form->isValid()) {
             $user = $form->getData();
+            $user->setConfirmationCode(md5(tempnam('/tmp', 'tmp').time()));
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();
 
+            $messageBody = $this->container->get('twig')->render('email/confirm_registration.html.twig', [
+                "first_name" => $user->getFirstName(),
+                "last_name" => $user->getLastName(),
+                "code" => $user->getConfirmationCode()
+            ]);
+
+            $message = (new \Swift_Message())
+                ->setSubject('Student confirmation')
+                ->setFrom('ann.zavolodko@gmail.com')
+                ->setTo($user->getEmail())
+                ->setBody($messageBody, 'text/html');
+
+            if (!$this->container->get('mailer')->send($message)) {
+                throw new \Exeption("Can't send email", Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
+            
             return $this->redirectToRoute('registration_success');
         }
 
         return [
             'form' => $form->createView(),
         ];
+    }
+
+    /**
+     * @Route("/confirm/{code}", name="confirm_registration")
+     * @Template()
+     */
+    public function confirmRegistrationAction(Request $request, $code)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $user = $em->getRepository('App:User')->findOneBy(['confirmationCode'=>$code]);
+        if (!$user) {
+            throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException();
+        }
+        $user->setConfirmationCode(null);
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($user);
+        $em->flush();
+
+        $token = new \Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken($user, null, 'main', $user->getRoles());
+        $this->get('security.token_storage')->setToken($token);            
+        $event = new \Symfony\Component\Security\Http\Event\InteractiveLoginEvent($request, $token);
+        $this->get("event_dispatcher")->dispatch("security.interactive_login", $event);
+
+        return $this->redirectToRoute('homepage');
     }
 
     /**
@@ -113,30 +146,69 @@ class SecurityController extends Controller
      */
     public function forgotPasswordAction(Request $request)
     {
-        throw new \Symfony\Component\Intl\Exception\NotImplementedException('Not implemented yet');
-        $formBuilder = $this->createFormBuilder()
-            ->add('email', EmailType::class, [
-                'required' => true,
-            ])
-            ->add('submit', SubmitType::class, array('label' => 'Send confirmation Url'));
-        $form = $formBuilder->getForm();
+        $form = $this->createForm(ForgotType::class);
         $form->handleRequest($request);
+        $error = null;
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $user = $this->container->get('school.user')->getByEmail($form->get('email')->getData());
+        if ($form->isSubmitted()) {
+            $em = $this->getDoctrine()->getManager();
+            $user = $em->getRepository('App:User')->findOneByEmailOrPhone($form->get('email')->getData(), $form->get('phone')->getData());
             if ($user) {
-                $this->container->get('school.user')->createConfirmationKey($user);
-                $request->getSession()
-                    ->getFlashBag()
-                    ->add('success', 'Confirmation link has been sent to requested email')
-                ;
+                $user->setForgotCode(md5(tempnam('/tmp', 'tmp').time()));
+                $em->persist($user);
+                $em->flush();
+
+                $messageBody = $this->container->get('twig')->render('email/reset_password.html.twig', [
+                    "first_name" => $user->getFirstName(),
+                    "last_name" => $user->getLastName(),
+                    "code" => $user->getForgotCode()
+                ]);
+
+                $message = (new \Swift_Message())
+                    ->setSubject('Student reset password')
+                    ->setFrom('ann.zavolodko@gmail.com')
+                    ->setTo($user->getEmail())
+                    ->setBody($messageBody, 'text/html');
+
+                if (!$this->container->get('mailer')->send($message)) {
+                    throw new \Exeption("Can't send email", Response::HTTP_INTERNAL_SERVER_ERROR);
+                }
+
+                return $this->redirectToRoute('login');
             }
             else {
-                $request->getSession()
-                    ->getFlashBag()
-                    ->add('danger', 'Email not found')
-                ;
+                $error = 'User not found';
             }
+        }
+
+        return [
+            'form' => $form->createView(),
+            'error' => $error,
+        ];
+    }
+
+    /**
+     * @Route("/forgot/{code}", name="restore_password")
+     * @Template()
+     */
+    public function restorePasswordAction(Request $request, $code)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $user = $em->getRepository('App:User')->findOneBy(['forgotCode'=>$code]);
+        if (!$user) {
+            throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException();
+        }
+
+        $form = $this->createForm(RestoreType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            $user->setPassword($form->get('password')->getData());
+            $user->setForgotCode(null);
+            $em->persist($user);
+            $em->flush();
+
+            return $this->redirectToRoute('login');
         }
 
         return [

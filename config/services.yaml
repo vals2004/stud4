@@ -27,10 +27,10 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
-    user_provider:
-        class: App\Security\UserProvider
-        arguments:
-            - "@doctrine.orm.entity_manager"
+    #user_provider:
+        #class: App\Security\UserProvider
+        #arguments:
+            #- "@doctrine.orm.entity_manager"
 
     exam_service: 
         class: App\Service\ExamService

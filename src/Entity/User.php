@@ -9,6 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\Common\Collections\ArrayCollection;
+use Misd\PhoneNumberBundle\Validator\Constraints\PhoneNumber as AssertPhoneNumber;
 
 /**
  * User
@@ -39,7 +40,8 @@ class User implements UserInterface, Serializable, EquatableInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="phone", type="string", length=35, unique=true, nullable=false)
+     * @ORM\Column(name="phone", type="phone_number", unique=true, nullable=false)
+     * @AssertPhoneNumber(defaultRegion="UA")
      */
     private $phone;
 
@@ -63,6 +65,20 @@ class User implements UserInterface, Serializable, EquatableInterface
      * @ORM\Column(name="last_name", type="string", length=255, nullable=false)
      */
     private $lastName;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="confirmation_code", type="string", length=255, nullable=true)
+     */
+    private $confirmationCode;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="forgot_code", type="string", length=255, nullable=true)
+     */
+    private $forgotCode;
 
     /**
      * @var Group 
@@ -458,5 +474,29 @@ class User implements UserInterface, Serializable, EquatableInterface
     public function getExams()
     {
         return $this->exams;
+    }
+
+    public function getConfirmationCode()
+    {
+        return $this->confirmationCode;
+    }
+
+    public function setConfirmationCode($confirmationCode)
+    {
+        $this->confirmationCode = $confirmationCode;
+
+        return $this;
+    }
+
+    public function getForgotCode()
+    {
+        return $this->forgotCode;
+    }
+
+    public function setForgotCode($forgotCode)
+    {
+        $this->forgotCode = $forgotCode;
+
+        return $this;
     }
 }

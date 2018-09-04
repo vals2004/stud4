@@ -5,6 +5,9 @@ use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\CoreBundle\Form\Type\DatePickerType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Vich\UploaderBundle\Form\Type\VichFileType;
 use App\Entity\Lesson;
 
 class LessonAdmin extends AbstractAdmin
@@ -13,8 +16,12 @@ class LessonAdmin extends AbstractAdmin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('name')
-            ->add('date')
+            ->add('subject', null, [
+                'required' => true,
+            ])
+            ->add('type')
+            ->add('documentFile', VichFileType::class)
+            ->add('date', DatePickerType::class)
             ->add('startTime')
             ->add('endTime')
             ->add('groups')
@@ -32,7 +39,9 @@ class LessonAdmin extends AbstractAdmin
     protected function configureListFields(ListMapper $listMapper)
     {
         $listMapper
-            ->addIdentifier('name')
+            ->addIdentifier('subject')
+            ->add('type')
+            ->add('document')
             ->add('date')
             ->add('startTime')
             ->add('endTime')

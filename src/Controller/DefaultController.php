@@ -12,6 +12,8 @@ use App\Entity\Exam;
 use App\Entity\ExamAnswer;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Response;
+use Psr\Log\LoggerInterface;
+
 
 class DefaultController extends Controller
 {
@@ -35,20 +37,22 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $user = $this->get('security.token_storage')->getToken()->getUser();
-        $lesson = $this->getDoctrine()->getRepository('App:Lesson')
-            ->findLessonFor($user);
+        //$user = $this->get('security.token_storage')->getToken()->getUser();
+        //$lesson = $this->getDoctrine()->getRepository('App:Lesson')
+            //->findLessonFor($user);
         
-        if (!$lesson) {
-            return $this->redirectToRoute('no_lesson');
-        }
+        //if (!$lesson) {
+            //return $this->redirectToRoute('no_lesson');
+        //}
 
-        if ($lesson->getUsers()->contains($user)) {
-            return $this->redirectToRoute('exam');
-        }
+        //if ($lesson->getUsers()->contains($user)) {
+            //return $this->redirectToRoute('exam');
+        //}
 
+        $lesson = $this->getDoctrine()->getManager()->getRepository('App:Lesson')->find(4);
         return [
             'base_dir' => realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR,
+            'lesson' => $lesson,
         ];
     }
 
@@ -128,13 +132,14 @@ class DefaultController extends Controller
      * @Route("/location/", name="location")
      * @Template()
      */
-    public function locationAction(Request $request)
+    public function locationAction(Request $request, LoggerInterface $logger)
     {
         $user = $this->get('security.token_storage')->getToken()->getUser();
 
-        $lesson = $this->getDoctrine()->getRepository('App:Lesson')
-            ->findLessonFor($user);
-        $room = $lesson->getRoom();
+        //$lesson = $this->getDoctrine()->getRepository('App:Lesson')
+            //->findLessonFor($user);
+        //$room = $lesson->getRoom();
+        $room = $this->getDoctrine()->getManager()->getRepository('App:Room')->find(4);
 
         $message = sprintf("User: %d, IP: %s, Latitude: %f, Longitude: %f, UserAgent: [%s]", 
             $user->getId(), 
@@ -143,7 +148,7 @@ class DefaultController extends Controller
             $request->query->get('long'),
             $request->server->get('HTTP_USER_AGENT')
         );
-        $this->container->get('logger')->critical($message);
+        $logger->critical($message);
 
         $location = new Location();
         $location->setLatitude($request->query->get('lat'));
@@ -163,25 +168,25 @@ class DefaultController extends Controller
         
         $message = sprintf("User: %d, Lesson: %d, Room: %d, Distance: %d", 
             $user->getId(), 
-            $lesson->getId(), 
+            0,//$lesson->getId(), 
             $room->getId(), 
             $distance
         );
-        $this->container->get('logger')->critical($message);
+        $logger->critical($message);
 
-        if ($distance>300) {
-            $message = 'Похоже вы находитесь не в аудитории.<br/> Если это не так, то попробуйте чуть <a href="'.($this->get('router')->generate('homepage')).'">позже</a> или обратитесь к преподавателю';
-        }
-        else {
-            try {
-                $lesson->addUser($user);
-                $em->persist($lesson);
-                $em->flush();
-            } catch (\Exception $e) {
-            }
+        //if ($distance>300) {
+            //$message = 'Похоже вы находитесь не в аудитории.<br/> Если это не так, то попробуйте чуть <a href="'.($this->get('router')->generate('homepage')).'">позже</a> или обратитесь к преподавателю';
+        //}
+        //else {
+            //try {
+                //$lesson->addUser($user);
+                //$em->persist($lesson);
+                //$em->flush();
+            //} catch (\Exception $e) {
+            //}
             
             $message = 'Поздравляем!<br/> Вы находитесь в аудитории, поэтому не шумите и внимательно слушайте преподавателя.';
-        }
+        //}
 
         return [
             'message' => $message,

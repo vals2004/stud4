@@ -1,37 +1,20 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+{{ parent() }}
+<link rel="stylesheet" href="{{ asset('build/css/login.css') }}">
+{% endblock %}
+
 {% block body %}
-<div id="out" />
+<div id="out"></div>
+<hr/>
+<div>
+    <div>Предмет: {{ lesson.subject.name }}</div>
+    <div>Конспект лекций: <a href="{{ vich_uploader_asset(lesson, 'documentFile') }}">скачать</a></div>
+</div>
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
-<script>
-$(function(){
-  var output = document.getElementById("out");
-
-  if (!navigator.geolocation){
-    output.innerHTML = "<p>Geolocation is not supported by your browser</p>";
-  }
-
-  function success(position) {
-    var latitude  = position.coords.latitude;
-    var longitude = position.coords.longitude;
-
-      $.get('{{ path('location') }}?lat=' + latitude + '&long=' + longitude, function (data) {
-        console.log(data);
-        output.innerHTML = data;
-    });
-  }
-
-  function error() {
-    $.get('/app_dev.php/error');
-    output.innerHTML = "Невозможно определить ваше положение, проверьте пожалуйста своё устройство и перегрузите страницу.";
-  }
-
-  output.innerHTML = "<p>Позиционирование (может занять время)…</p>";
-
-  navigator.geolocation.getCurrentPosition(success, error);
-})
-</script>
+    <script src="{{ asset('build/js/index.js') }}"></script>
 {% endblock %}

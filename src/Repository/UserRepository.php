@@ -10,4 +10,33 @@ namespace App\Repository;
  */
 class UserRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function findOneByEmailOrPhone($email, $phone)
+    {
+        $query = $this->createQueryBuilder('u');
+        if (!empty($email)) {
+            $query
+                ->orWhere('u.email = :email')
+                ->setParameter('email', $email)
+                ;
+        }
+        if (!empty($phone)) {
+            $query
+                ->orWhere('u.phone = :phone')
+                ->setParameter('phone', $phone)
+            ;
+        }
+        $query
+            ->setMaxResults(1)
+        ;
+
+        $user = $query->getQuery()
+            ->getOneOrNullResult()
+        ;
+
+        if (!$user) {
+            throw new UsernameNotFoundException;
+        }
+
+        return $user;
+    }
 }

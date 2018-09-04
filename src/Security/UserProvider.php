@@ -38,8 +38,11 @@ class UserProvider implements UserProviderInterface
         $query = $this->entityManager
             ->getRepository('App:User')
             ->createQueryBuilder('u')
-            ->where('u.email = :email')
+            ->where('u.confirmationCode IS NULL')
+            ->andWhere('u.email = :email')
+            ->orWhere('u.phone = :phone')
             ->setParameter('email', $username)
+            ->setParameter('phone', $username)
             ->setMaxResults(1)
         ;
 

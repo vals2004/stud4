@@ -1,0 +1,42 @@
+security:
+    # https://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
+    encoders:
+        App\Entity\User:
+            algorithm: plaintext
+            #algorithm: bcrypt
+            #cost: 12
+
+    # https://symfony.com/doc/current/security.html#b-configuring-how-users-are-loaded
+    providers:
+        user_provider:
+            id: user_provider
+
+    firewalls:
+        # disables authentication for assets and the profiler, adapt it according to your needs
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        main:
+            pattern: ^/
+            anonymous: ~
+            provider: user_provider
+            form_login:
+                use_forward: false
+                login_path: login
+                check_path: login_check
+                default_target_path: homepage 
+                #success_handler: redirect.after.login
+                username_parameter: "form[_username]"
+                password_parameter: "form[_password]"
+            logout:
+                path: logout
+                target: login
+
+    access_control:
+        - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/forgot-password, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/registration, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/registration-success, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/nimda, roles: ROLE_ADMIN }
+        - { path: ^/, roles: ROLE_USER }  

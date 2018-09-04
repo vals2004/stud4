@@ -1,0 +1,38 @@
+version: '2'
+services:
+    web:
+        container_name: stud4-web-container
+        build:
+            context: ./docker/web
+            args:
+                HOST_UID: ${HOST_UID}
+                OAUTH_KEY: ${OAUTH_KEY}
+                PASSWORD: ${PASSWORD}
+        cap_add:
+          - SYS_ADMIN
+        security_opt:
+          - seccomp:unconfined
+        restart: always
+        volumes:
+          - .:/var/www/html
+          - /sys/fs/cgroup:/sys/fs/cgroup:ro
+        ports:
+            - "${HTTP_PORT}:80"
+            - "${HTTPS_PORT}:443"
+
+    db:
+        container_name: stud4-db-container
+        build:
+            context: ./docker/db
+            args:
+                HOST_UID: ${HOST_UID}
+        restart: always
+        volumes:
+            - ./docker/runtime/db_data:/var/lib/mysql
+        ports:
+            - "${MYSQL_PORT}:3306"
+        environment:
+            MYSQL_ROOT_PASSWORD: ${PASSWORD}
+            MYSQL_DATABASE: stud
+            MYSQL_USER: stud
+            MYSQL_PASSWORD: ${PASSWORD}

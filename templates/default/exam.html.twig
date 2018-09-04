@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<h3>{{app.user.group.name}} - {{app.user.firstName}} {{app.user.lastName}} (затрачено: <span id="timer">{{time}}</span>)</h3>
+
+{% if exam is defined %}
+Ваш результат: {{ exam.result }} из {{ exam.questions|length }}<br><hr><br>
+    {% for a in exam.answers %}
+        {% set correct = exam_service.isCorrectAnswer(a) %}
+        {{ correct ? '+++' : '&nbsp' }} {{ a.question }}<br>
+    {% endfor %}
+{% else %}
+<form>
+<div>
+[{{num}}] {{ question.text }}
+<ol>
+{% for a in answers %}
+<li><input type="checkbox" name="answer[]" id="check-{{ a.id }}" value="{{ a.id }}"><label for="check-{{ a.id }}">{{ a.text }}</label></li>
+{% endfor %}
+</ol>
+<div><font size="-4">1-n: переключение ответов, 'Enter' - ответить</font></div>
+<input type="submit" value="ответить"> 
+</div>
+</form>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+$(document).on('keypress', function(e) {
+    if (e.key=='Enter') {
+        $('form').submit();
+    }
+    var c = $('input[type=checkbox]')[e.key-1];
+    if ( c != undefined ) {
+        $(c).attr('checked', !$(c).attr('checked'));
+    }
+});
+setInterval(function () {
+    var d = new Date();
+    var r = $('#timer').html().match(/(\d+):(\d+):(\d+)/);
+    d.setHours(r[1], r[2], r[3]);
+    d.setSeconds(d.getSeconds()+1);
+    $('#timer').html(('0'+d.getHours()).substr(-2,2)+':'+('0'+d.getMinutes()).substr(-2,2)+':'+('0'+d.getSeconds()).substr(-2,2));
+}, 1000);
+</script>
+{% endif %}
+{% endblock %}

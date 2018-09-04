@@ -1,0 +1,9 @@
+{% extends 'SonataAdminBundle:CRUD:base_list_field.html.twig' %}
+
+{% block field%}
+{% if value != null %}
+    <div style="text-align: center">
+        <span class="badge">{{value|length}}</span>
+    </div>
+{% endif %}
+{% endblock %}

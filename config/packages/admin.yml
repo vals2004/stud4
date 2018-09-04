@@ -1,0 +1,65 @@
+services:
+    sonata.block.exception.filter.debug_only:
+        class: Sonata\BlockBundle\Exception\Filter\DebugOnlyFilter
+        public: true
+        arguments:
+            - "%kernel.debug%"
+    sonata.block.exception.renderer.throw:
+        class: Sonata\BlockBundle\Exception\Renderer\MonkeyThrowRenderer
+        public: true
+    sonata.admin.orm.filter.type.model:
+        class: Sonata\DoctrineORMAdminBundle\Filter\ModelFilter
+        public: true
+        tags:
+            - { name: sonata.admin.filter.type, alias: doctrine_orm_model }
+
+    app.admin.user_admin:
+        class: App\Admin\UserAdmin
+        public: true
+        arguments:
+            - ~
+            - App\Entity\User
+            - ~
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: Users, group: Common }
+
+    app.admin.lesson_admin:
+        class: App\Admin\LessonAdmin
+        public: true
+        arguments:
+            - ~
+            - App\Entity\Lesson
+            - ~
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: Lessons, group: Common }
+
+    app.admin.room_admin:
+        class: App\Admin\RoomAdmin
+        public: true
+        arguments:
+            - ~
+            - App\Entity\Room
+            - ~
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: Rooms, group: Common }
+
+    app.admin.group_admin:
+        class: App\Admin\GroupAdmin
+        public: true
+        arguments:
+            - ~
+            - App\Entity\Group
+            - ~
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: Groups, group: Common }
+
+    app.admin.exam_admin:
+        class: App\Admin\ExamAdmin
+        public: true
+        arguments:
+            - ~
+            - App\Entity\Exam
+            - ~
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: Exam, group: Exams }
+

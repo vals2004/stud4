@@ -11,6 +11,13 @@
 <div>
     <div>Предмет: {{ lesson.subject.name }}</div>
     <div>Конспект лекций: <a href="{{ vich_uploader_asset(lesson, 'documentFile') }}">скачать</a></div>
+    <!--
+    <div>Конспект лекций: <a href="{{ vich_uploader_asset(lesson, 'documentLabFile') }}">скачать</a></div>
+    <div>Лабораторная работа: <a href="{{ vich_uploader_asset(lesson, 'documentLabFile') }}">скачать</a></div>
+    <div>Лабораторная работа: <a href="{{ vich_uploader_asset(lesson, 'documentLabFile1') }}">скачать</a></div>
+    <div>Лабораторная работа: <a href="{{ vich_uploader_asset(lesson, 'documentLabFile2') }}">скачать</a></div>
+    <div>Лабораторная работа: <a href="{{ vich_uploader_asset(lesson, 'documentLabFile3') }}">скачать</a></div>
+    -->
 </div>
 {% endblock %}
 

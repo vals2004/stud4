@@ -12,7 +12,8 @@ class QuestionRepository extends \Doctrine\ORM\EntityRepository
 {
     public function getRandomQuestions($qty =30)
     {
-        $all = $this->createQueryBuilder('q')
+	$all = $this->createQueryBuilder('q')
+	    ->where('q.hide <> 1')
             ->getQuery()
             ->getResult()
         ;

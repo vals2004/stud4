@@ -17,6 +17,7 @@ use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Psr\Log\LoggerInterface;
 use App\Entity\User;
 use App\Form\UserType;
 use App\Form\LoginType;
@@ -33,8 +34,10 @@ class SecurityController extends Controller
      * @Route("/login", name="login")
      * @Template()
      */
-    public function loginAction(Request $request)
+    public function loginAction(Request $request, \SunCat\MobileDetectBundle\DeviceDetector\MobileDetector $mobileDetector, \Psr\Log\LoggerInterface $logger)
     {
+        $logger->critical(serialize($mobileDetector));
+
         $session = $request->getSession();
 
         // get the login error if there is one
@@ -68,8 +71,10 @@ class SecurityController extends Controller
      * @Route("/registration", name="registration")
      * @Template()
      */
-    public function registrationAction(Request $request)
+    public function registrationAction(Request $request, \SunCat\MobileDetectBundle\DeviceDetector\MobileDetector $mobileDetector, \Psr\Log\LoggerInterface $logger)
     {
+        $logger->critical(serialize($mobileDetector));
+
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
 
@@ -98,7 +103,7 @@ class SecurityController extends Controller
                 throw new \Exeption("Can't send email", Response::HTTP_INTERNAL_SERVER_ERROR);
             }
             
-            return $this->redirectToRoute('registration_success');
+            return $this->redirectToRoute('login');
         }
 
         return [

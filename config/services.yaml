@@ -34,3 +34,7 @@ services:
 
     exam_service: 
         class: App\Service\ExamService
+
+
+    SunCat\MobileDetectBundle\DeviceDetector\MobileDetector:
+        alias: mobile_detect.mobile_detector.default

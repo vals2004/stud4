@@ -29,6 +29,13 @@ class Question
     private $text;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="hide", type="integer", unique=false)
+     */
+    private $hide;
+
+    /**
      * @var Answer[]
      *
      * @ORM\OneToMany(targetEntity="Answer", mappedBy="question")
@@ -127,5 +134,16 @@ class Question
             }
         }
         return new \Doctrine\Common\Collections\ArrayCollection($correct);
+    }
+
+    public function getHide()
+    {
+        return $this->hide;
+    }
+
+    public function setHide($hide)
+    {
+        $this->hide = $hide;
+        return $this;
     }
 }

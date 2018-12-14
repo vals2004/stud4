@@ -49,7 +49,7 @@ class DefaultController extends Controller
             //return $this->redirectToRoute('exam');
         //}
 
-        $lesson = $this->getDoctrine()->getManager()->getRepository('App:Lesson')->find(4);
+        $lesson = $this->getDoctrine()->getManager()->getRepository('App:Lesson')->find(13);
         return [
             'base_dir' => realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR,
             'lesson' => $lesson,

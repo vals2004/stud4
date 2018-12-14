@@ -74,6 +74,54 @@ class Lesson
     private $documentFile;
 
     /**
+     * @ORM\Column(type="string", length=255)
+     * @var string
+     */
+    private $documentLab;
+
+    /**
+     * @Vich\UploadableField(mapping="lesson_documents", fileNameProperty="documentLab")
+     * @var File
+     */
+    private $documentLabFile;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @var string
+     */
+    private $documentLab1;
+
+    /**
+     * @Vich\UploadableField(mapping="lesson_documents", fileNameProperty="documentLab1")
+     * @var File
+     */
+    private $documentLabFile1;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @var string
+     */
+    private $documentLab2;
+
+    /**
+     * @Vich\UploadableField(mapping="lesson_documents", fileNameProperty="documentLab2")
+     * @var File
+     */
+    private $documentLabFile2;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @var string
+     */
+    private $documentLab3;
+
+    /**
+     * @Vich\UploadableField(mapping="lesson_documents", fileNameProperty="documentLab3")
+     * @var File
+     */
+    private $documentLabFile3;
+
+    /**
      * @ORM\Column(type="datetime")
      * @var \DateTime
      */
@@ -365,5 +413,119 @@ class Lesson
     public function getDocument()
     {
         return $this->document;
+    }
+
+    public function setDocumentLabFile(File $document = null)
+    {
+        $this->documentLabFile = $document;
+
+        // VERY IMPORTANT:
+        // It is required that at least one field changes if you are using Doctrine,
+        // otherwise the event listeners won't be called and the file is lost
+        if ($document) {
+            // if 'updatedAt' is not defined in your entity, use another property
+            $this->updatedAt = new \DateTime('now');
+        }
+    }
+
+    public function getDocumentLabFile()
+    {
+        return $this->documentLabFile;
+    }
+
+    public function setDocumentLab($document)
+    {
+        $this->documentLab = $document;
+        $this->updatedAt = new \DateTime('now');
+    }
+
+    public function getDocumentLab()
+    {
+        return $this->documentLab;
+    }
+
+    public function getDocumentLab1()
+    {
+        return $this->documentLab1;
+    }
+
+    public function setDocumentLab1($document)
+    {
+        $this->documentLab1 = $document;
+        $this->updatedAt = new \DateTime('now');
+    }
+
+    public function getDocumentLab2()
+    {
+        return $this->documentLab2;
+    }
+
+    public function setDocumentLab2($document)
+    {
+        $this->documentLab2 = $document;
+        $this->updatedAt = new \DateTime('now');
+    }
+
+    public function getDocumentLab3()
+    {
+        return $this->documentLab3;
+    }
+
+    public function setDocumentLab3($document)
+    {
+        $this->documentLab3 = $document;
+        $this->updatedAt = new \DateTime('now');
+    }
+    
+    public function setDocumentLabFile1(File $document = null)
+    {
+        $this->documentLabFile1 = $document;
+
+        // VERY IMPORTANT:
+        // It is required that at least one field changes if you are using Doctrine,
+        // otherwise the event listeners won't be called and the file is lost
+        if ($document) {
+            // if 'updatedAt' is not defined in your entity, use another property
+            $this->updatedAt = new \DateTime('now');
+        }
+    }
+
+    public function getDocumentLabFile1()
+    {
+        return $this->documentLabFile1;
+    }
+    public function setDocumentLabFile2(File $document = null)
+    {
+        $this->documentLabFile2 = $document;
+
+        // VERY IMPORTANT:
+        // It is required that at least one field changes if you are using Doctrine,
+        // otherwise the event listeners won't be called and the file is lost
+        if ($document) {
+            // if 'updatedAt' is not defined in your entity, use another property
+            $this->updatedAt = new \DateTime('now');
+        }
+    }
+
+    public function getDocumentLabFile2()
+    {
+        return $this->documentLabFile2;
+    }
+    public function setDocumentLabFile3(File $document = null)
+    {
+        $this->documentLabFile3 = $document;
+
+        // VERY IMPORTANT:
+        // It is required that at least one field changes if you are using Doctrine,
+        // otherwise the event listeners won't be called and the file is lost
+        if ($document) {
+            // if 'updatedAt' is not defined in your entity, use another property
+            $this->updatedAt = new \DateTime('now');
+        }
+    }
+
+    public function getDocumentLabFile3()
+    {
+        return $this->documentLabFile3;
     }
 }

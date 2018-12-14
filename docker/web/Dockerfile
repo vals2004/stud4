@@ -71,10 +71,10 @@ RUN echo "deb http://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.
 RUN apt-get update && apt-get install -y yarn
 
 # install phpMyAdmin
-#RUN mkdir /var/www/phpmyadmin \
-#    && curl https://files.phpmyadmin.net/phpMyAdmin/4.7.0/phpMyAdmin-4.7.0-english.tar.gz \
-#    | tar -xz -C /var/www/phpmyadmin --strip-components=1
-#RUN cat /var/www/phpmyadmin/config.sample.inc.php | sed -e 's/localhost/db/' > /var/www/phpmyadmin/config.inc.php 
+RUN mkdir /var/www/phpmyadmin \
+    && curl https://files.phpmyadmin.net/phpMyAdmin/4.7.0/phpMyAdmin-4.7.0-english.tar.gz \
+    | tar -xz -C /var/www/phpmyadmin --strip-components=1
+RUN cat /var/www/phpmyadmin/config.sample.inc.php | sed -e 's/localhost/db/' > /var/www/phpmyadmin/config.inc.php 
 
 EXPOSE 80
 EXPOSE 443

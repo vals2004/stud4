@@ -43,6 +43,7 @@ security:
             access_denied_url: frontend_app_bundle_default_homepage
 
     access_control:
+        - { path: ^/alexa, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/confirm, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/forgot, roles: IS_AUTHENTICATED_ANONYMOUSLY }

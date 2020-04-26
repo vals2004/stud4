@@ -49,7 +49,7 @@ RUN echo "LogFormat \"%a %l %u %t \\\"%r\\\" %>s %O \\\"%{User-Agent}i\\\"\" mai
 RUN a2enmod rewrite remoteip ssl
 RUN a2ensite 000-default.conf
 RUN a2ensite 000-default-ssl.conf
-RUN apt-get install -y python-certbot-apache 
+#RUN apt-get install -y python-certbot-apache 
 #RUN certbot --authenticator webroot --installer apache -d stud.ddns.net
 
 RUN set -x && curl -sS https://getcomposer.org/installer | php \

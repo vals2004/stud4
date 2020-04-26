@@ -37,19 +37,19 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request)
     {
-        //$user = $this->get('security.token_storage')->getToken()->getUser();
-        //$lesson = $this->getDoctrine()->getRepository('App:Lesson')
-            //->findLessonFor($user);
+        $user = $this->get('security.token_storage')->getToken()->getUser();
+        $lesson = $this->getDoctrine()->getRepository('App:Lesson')
+            ->findLessonFor($user);
         
-        //if (!$lesson) {
-            //return $this->redirectToRoute('no_lesson');
-        //}
+        if (!$lesson) {
+            return $this->redirectToRoute('no_lesson');
+        }
 
-        //if ($lesson->getUsers()->contains($user)) {
-            //return $this->redirectToRoute('exam');
-        //}
+        if ($lesson->getUsers()->contains($user)) {
+            return $this->redirectToRoute('exam');
+        }
 
-        $lesson = $this->getDoctrine()->getManager()->getRepository('App:Lesson')->find(13);
+        //$lesson = $this->getDoctrine()->getManager()->getRepository('App:Lesson')->find(13);
         return [
             'base_dir' => realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR,
             'lesson' => $lesson,

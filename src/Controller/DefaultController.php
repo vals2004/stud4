@@ -45,9 +45,9 @@ class DefaultController extends Controller
             return $this->redirectToRoute('no_lesson');
         }
 
-        if ($lesson->getUsers()->contains($user)) {
-            return $this->redirectToRoute('exam');
-        }
+        //if ($lesson->getUsers()->contains($user)) {
+            //return $this->redirectToRoute('exam');
+        //}
 
         //$lesson = $this->getDoctrine()->getManager()->getRepository('App:Lesson')->find(13);
         return [

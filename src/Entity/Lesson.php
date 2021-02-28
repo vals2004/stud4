@@ -62,7 +62,7 @@ class Lesson
     private $type;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @var string
      */
     private $document;
@@ -74,7 +74,7 @@ class Lesson
     private $documentFile;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @var string
      */
     private $documentLab;
@@ -86,7 +86,7 @@ class Lesson
     private $documentLabFile;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @var string
      */
     private $documentLab1;
@@ -98,7 +98,7 @@ class Lesson
     private $documentLabFile1;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @var string
      */
     private $documentLab2;
@@ -110,7 +110,7 @@ class Lesson
     private $documentLabFile2;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @var string
      */
     private $documentLab3;

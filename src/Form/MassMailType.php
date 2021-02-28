@@ -32,7 +32,8 @@ class MassMailType extends AbstractType
                 'required' => true,
                 'label' => '{name}',
                 'attr' => [
-                    'rows' => 20,
+		    'rows' => 20,
+		    'cols' => 100,
                 ],
             ])
             ->add('recipients', TextareaType::class, [

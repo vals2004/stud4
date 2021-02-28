@@ -23,7 +23,7 @@ RUN apt-get install -y \
         libjpeg62-turbo-dev \
         libmcrypt-dev \
         #libpng12-dev \
-        mysql-client \
+        #mysql-client \
     && docker-php-ext-install -j$(nproc) iconv \
     #&& docker-php-ext-configure mcrypt \
     #&& docker-php-ext-install -j$(nproc) mcrypt \

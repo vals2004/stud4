@@ -34,10 +34,10 @@ class MailController extends Controller
                 'ok' => [],
                 'error' => [],
             ];
-
             $subject = $form->getData()['subject'];
             $message = $form->getData()['message'];
             $recipients = explode("\r\n", $form->getData()['recipients']);
+
             array_walk($recipients, function (&$e) {
                 $e = explode('___', $e);
             });
@@ -62,25 +62,25 @@ class MailController extends Controller
             }
 
             foreach ($recipients as $r) {
-                $messageBody = preg_replace('/{name}/', $r[1], $message);
-                $certificateNumber = explode('_', $r[2])[0];
-                //$messageBody = $message;
+                //$messageBody = preg_replace('/{name}/', $r[1], $message);
+                //$certificateNumber = explode('_', $r[2])[0];
+                $messageBody = $message;
 
                 try {
                     $messageObj = (new \Swift_Message())
-                        ->setSubject(preg_replace('/{num}/', $certificateNumber, $subject))
-                        //->setSubject($subject)
-                        ->setFrom('ntu.khpi.si@gmail.com')
+                        //->setSubject(preg_replace('/{num}/', $certificateNumber, $subject))
+                        ->setSubject($subject)
+                        ->setFrom('dComFra.Kharkiv@gmail.com')
                         ->setTo($r[0])
                         //->setBcc('ntu.khpi.si@gmail.com')
                         ->setBody($messageBody, 'text/html');
 
                     if ($attachUploaded) {
-                        $attachName = $attachPath . '/' . $r[2];//. '.pdf';
+                        $attachName = $attachPath . '/ED2020_Cert/' . $r[1];//. '.pdf';
                         if (!file_exists($attachName)) {
                             $recipientsList['error'][$r[0]] = 'attach not found'; 
                             continue;
-                            //throw new \Exception('file not found');
+                            ////throw new \Exception('file not found');
                         }
                         $messageObj
                             ->attach(\Swift_Attachment::fromPath($attachName));
@@ -88,16 +88,17 @@ class MailController extends Controller
 
                     if (!$this->container->get('mailer')->send($messageObj)) {
                         $recipientsList['error'][$r[0]] = 'smtp error'; 
-                        continue;
-                        //throw new \Exeption("Can't send email", Response::HTTP_INTERNAL_SERVER_ERROR);
+                        //continue;
+                        throw new \Exeption("Can't send email", Response::HTTP_INTERNAL_SERVER_ERROR);
                     }
                     else {
                         $recipientsList['ok'][$r[0]] = 'queue'; 
-                        //dump(sprintf("%s - sent", $r[0]));
+                        //dump(sprintf("%s - sent", $r));
                     }
                 } catch (\Exception $e) {
                     $recipientsList[$r[0]] = 'unknown error'; 
-                    //dump(sprintf("%s - error", $r[0]));
+                    dump($e);
+                    //dump(sprintf("%s - error", $r));
                 }
             }
 
